@@ -2,6 +2,16 @@ import {Table} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {setUser, plusAge } from "../store/userSlice.js";
 import { setCount } from "../store";
+import {memo, useMemo, useState} from "react";
+
+const Child = memo( () => {
+    console.log('재렌더링됨')
+    const memo1 = useMemo(() => {
+        console.log('실행할 함수');
+    }, []);
+    return <div>자식임</div>
+})
+// memo는 props가 변화하면 재렌더링함 -> 그전에 비교작업해서 여부 결정 (막 쓰면 비교 작업때문에 오히려 성능 내려갈 수 도 있음)
 
 const Cart = () => {
 
@@ -17,8 +27,12 @@ const Cart = () => {
     // store.js로 요청을 보냄
     let dispatch = useDispatch();
 
+    let [count, setCount] = useState(0);
+
     return (
         <div>
+            <Child count={count}></Child>
+            <button onClick={() => {setCount(count++)}}>count++재렌더링</button>
             <h4>{user.age}살 {user.name}의 장바구니</h4>
             <button onClick={() => {
                 dispatch(plusAge(1))

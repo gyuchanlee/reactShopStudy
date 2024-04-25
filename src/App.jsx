@@ -1,12 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import {Button, Container, Nav, Navbar, Row, Col, Spinner } from 'react-bootstrap';
-import {createContext, useEffect, useState} from "react";
+import {createContext, lazy, Suspense, useEffect, useState} from "react";
 import data from './data.js';
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
-import Detail from "./routes/detail";
+// import Detail from "./routes/detail";
+// import Cart from "./routes/Cart";
 import axios from "axios";
-import Cart from "./routes/Cart";
+import {useQuery} from "react-query";
+import Boot from "./routes/Boot";
 
 const MokokoCard = (props) => {
     return (
@@ -32,7 +34,7 @@ const MainPage = (props) => {
                 {
                     localStorage.getItem('watched') && JSON.parse(localStorage.getItem('watched')).map((watchedId, i) => {
                         return (
-                                <img key={i} src={props.mokokos[watchedId].src} width="50px" height="50px" alt="dd"
+                                <img key={i} src={'.' + props.mokokos[watchedId].src} width="50px" height="50px" alt="dd"
                                      onClick={() => props.navigate('/detail/' + props.mokokos[watchedId].id)}/>
                         )
                     })
@@ -124,6 +126,11 @@ const Event = () => {
 
 // export let Context1 = createContext();
 
+// lazy import
+const Detail = lazy(()=> import('./routes/detail.js'));
+const Cart = lazy(()=> import('./routes/Cart.js'));
+
+
 function App() {
 
     useEffect(() => {
@@ -147,6 +154,19 @@ function App() {
 
     // 페이지 이동을 도와주는 함수를 저장해서 쓸 수 있음.
     let navigate = useNavigate();
+
+    // react-query
+    // let nameQuery = useQuery('nameQuery', () =>
+    //     axios.get('https://codingapple1.github.io/userdata.json')
+    //         .then((result) => {
+    //             console.log(result.data);
+    //             return result.data;
+    //         }),
+    //         { staleTime : 2000}
+    // )
+    // console.log('react-query ', nameQuery.data);
+    // console.log('react-query ', nameQuery.isLoading);
+    // console.log('react-query ', nameQuery.error);
 
     return (
         <div className="App">
@@ -193,24 +213,35 @@ function App() {
                 </Container>
             </Navbar>
 
+            <Suspense fallback={<div>Loading...</div>}>
             <Routes>
                 {/* Route 는 페이지같은 개념 */}
                 <Route path="/" element={<MainPage mokokos={mokokos} setMokokos={setMokokos} navigate={navigate}/>}></Route>
                 {/* url paramter = :변수명 으로 설정 */}
-                <Route path="/detail/:id" element={<Detail mokokos={mokokos} />}/>
+                <Route path="/detail/:id" element={
+                    // <Suspense fallback={<div>Loading...</div>}>
+                        <Detail mokokos={mokokos} />
+                    // </Suspense>
+                }/>
                 {/* nested routes : 하위 주소를 가독성있게 표현 */}
                 <Route path="/about" element={<About/>}>
                     {/* 하위의 요소를 보여줄려면 Outlet으로 상위 요소에 지정해줘야 함 -> 상위 요소안에 하위 요소를 넣어서 보여줌 */}
                     <Route path="member" element={<div>멤버임</div>}/>
                     <Route path="location" element={<div>로케이션임</div>}/>
                 </Route>
-                <Route path="/cart" element={<Cart/>}></Route>
+                <Route path="/cart" element={
+                    // <Suspense fallback={<div>Loading...</div>}>
+                        <Cart/>
+                    // </Suspense>
+                }></Route>
                 <Route path="/event" element={<Event/>}>
                     <Route path="one" element={<div><h4>모코코 인형이 무료</h4></div>}></Route>
                     <Route path="two" element={<div><h4>슈퍼 모모코 익스프레스 증정</h4></div>}></Route>
                 </Route>
+                <Route path="/boot" element={<Boot/>}></Route>
                 <Route path="*" element={<div>404 Error Page</div>}/>
             </Routes>
+            </Suspense>
 
         </div>
     );

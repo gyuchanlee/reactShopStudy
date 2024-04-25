@@ -100,7 +100,6 @@ const Another = () => {
     )
 }
 
-
 const Detail = (props) => {
 
     let dispatch = useDispatch();
@@ -140,7 +139,7 @@ const Detail = (props) => {
             quantityInput.current.value = '';
             quantityInput.current.focus();
         }
-    });
+    }, []);
 
     // Hook
     useEffect(() => {
