@@ -121,6 +121,18 @@ const Detail = (props) => {
 
     const quantityInput = useRef();
 
+    // 상세페이지 들어 왔을 때, 최근 본 페이지 변수에 등록
+    useEffect(() => {
+        let watched = JSON.parse(localStorage.getItem('watched'));
+        let find = watched.find(w => w == findMokoko.id);
+        console.log('find ' + find);
+        if (find === undefined || find === null) {
+            let copy = [...watched, findMokoko.id];
+            localStorage.setItem('watched', JSON.stringify(copy));
+        }
+    }, []);
+
+
     useEffect(() => {
         if (isNaN(input)) {
             alert('수량이니까 숫자 적으세요');

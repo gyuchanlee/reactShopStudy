@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import {Button, Container, Nav, Navbar, Row, Col, Spinner } from 'react-bootstrap';
-import {createContext, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import data from './data.js';
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 import Detail from "./routes/detail";
@@ -27,6 +27,17 @@ const MainPage = (props) => {
     return (
         <>
             <div className='main-bg'></div>
+            <div>
+                <h1>최근 본 상품</h1>
+                {
+                    localStorage.getItem('watched') && JSON.parse(localStorage.getItem('watched')).map((watchedId, i) => {
+                        return (
+                                <img key={i} src={props.mokokos[watchedId].src} width="50px" height="50px" alt="dd"
+                                     onClick={() => props.navigate('/detail/' + props.mokokos[watchedId].id)}/>
+                        )
+                    })
+                }
+            </div>
             {
                isLoading ?  <Spinner/> : null
             }
@@ -114,6 +125,21 @@ const Event = () => {
 // export let Context1 = createContext();
 
 function App() {
+
+    useEffect(() => {
+        if (localStorage.getItem('watched') === null || localStorage.getItem('watched') === undefined) {
+            localStorage.setItem('watched', JSON.stringify( [] ))
+        }
+    }, []);
+
+    // localStorage 써보기
+    let obj = {name : '망그러진곰'}
+    // JSON으로 바꿔 보내면 객체도 보낼 수 있음 -> 약간의 편법
+    localStorage.setItem('data', JSON.stringify(obj));
+    let item = localStorage.getItem('data');
+    console.log(JSON.parse(item));
+    // 객체처럼 필드 꺼내쓰고 싶을 땐 JSON.parse() 사용하기
+    console.log(JSON.parse(item).name);
 
     let [mokokos, setMokokos] = useState(data);
     let [quantity, setQuantity] = useState([10, 11, 12, 13, 14]);
